@@ -9,6 +9,7 @@ const months = ['January','February','March', 'April','May', 'June', 'July', 'Au
 const { Content } = Layout;
 class App extends React.Component {
   state={
+    hemisphere: "Northern Hemisphere",
     columns: [],
     data: [],
     dataAggregated: [], // stores aggregated month data
@@ -45,10 +46,28 @@ class App extends React.Component {
           })
         }
       }
+      // Prepare data for this month
+      df = df.filter(i => i['Hemisphere'] === this.state.hemisphere)
+
+      let date = new Date()
+      let month = date.getMonth() + 1
+      console.log(month)
+      let dataThisMonth = df.filter(i => i['Month'] === month.toString())
+      let names = {}
+      let filteredDataThisMonth = []
+      dataThisMonth.map(i => {
+        if (!names[i['Name']]) {
+          names[i['Name']] = 1
+          filteredDataThisMonth.push(i)
+        }
+      })
+
+      console.log(filteredDataThisMonth.length)
       this.setState({
         data: df, 
         filteredData: df,
-        columns: columns
+        columns: columns,
+        filteredDataThisMonth: filteredDataThisMonth
       })
     })
   }
@@ -76,7 +95,24 @@ class App extends React.Component {
             
             {/* Table, view mode is "LIST" */}
             {this.state.viewMode === "LIST" && this.state.data && this.state.data.length > 0 && <Table columns={this.state.columns} dataSource={this.state.filteredData} />}
-            {this.state.viewMode === "CARD" && this.state.data && this.state.data.length > 0 && (
+            {this.state.viewMode === "CARD" && this.state.data && this.state.data.length > 0 && (<div>
+              <h2>Available This Month</h2>
+              <Row style={{margin:"5px"}}>
+                {this.state.filteredDataThisMonth.map(({url, Name, Price, Location, Size, Time }) => (
+                  <Col xs={12} sm={12} md={8} lg={6} xl={4}>
+                    <Card style={{background: "#fefae3", margin:"5px", borderRadius:"10px"}}>
+                    <img style={{display:"block"}} src={url} alt={Name}/>
+                    <h3 style={{overflow:"hidden !important"}}>{Name}</h3>
+                    <p>{Location}</p>
+                    <p>{Time}</p>
+                    <p>{Price}</p>
+                    <p>{Size}</p>
+                  </Card>
+                  </Col>
+                  
+                ))}
+              </Row>
+              <h2>All Cards</h2>
               <Row style={{margin:"5px"}}>
                 {this.state.filteredData.map(({url, Name, Price, Location, Size, Time }) => (
                   <Col xs={12} sm={12} md={8} lg={6} xl={4}>
@@ -92,6 +128,7 @@ class App extends React.Component {
                   
                 ))}
               </Row>
+            </div>
             )}
           </Content>
         </Layout>
