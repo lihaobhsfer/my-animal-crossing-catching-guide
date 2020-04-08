@@ -37,7 +37,9 @@ class App extends React.Component {
   componentWillMount() {
     let df = [];
     let columns = [];
-    d3.csv(fishData, function (data) {
+    
+    d3.csv("http://49.233.4.154/fish.csv", {RequestMode: "no-cors"},function (data) {
+    // d3.csv(fishData, function (data) {
       df.push(data);
     }).then(() => {
       let row = df[0];
