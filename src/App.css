@@ -1,3 +1,10 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@200;400;700:800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Baloo+Tammudu+2:wght@400;500;600;700;800&family=Baloo+Thambi+2&display=swap");
+body {
+  /* font-family: 'Nunito', sans-serif !important; */
+  font-family: "Baloo Thambi 2", cursive;
+}
+
 .App {
   text-align: center;
 }
@@ -48,7 +55,7 @@
 }
 .title h3 {
   text-align: center;
-  font-weight: 600;
+  font-weight: 800;
   max-width: 80%;
   color: #fefae3;
   margin: 5px;
@@ -57,10 +64,17 @@
   white-space: nowrap;
 }
 
-.card-desc{
+.ant-card-body {
+  padding: 12px !important;
+  min-height: 18em;
+}
+
+.card-desc {
   margin: 5px;
 }
 
 .desc-text {
   margin-bottom: 0;
+  font-weight: 400;
+  color: rgb(128, 90, 45);
 }

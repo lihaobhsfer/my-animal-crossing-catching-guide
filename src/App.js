@@ -1,15 +1,18 @@
 import React from "react";
-import "./App.css";
 import * as d3 from "d3";
 import fishData from "./data/data.csv";
 import { Layout, Table, Radio, Card, Row, Col } from "antd";
 import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
 import {
-  ClockCircleFilled,
-  EnvironmentFilled,
-  DollarCircleFilled,
-  SlidersFilled,
+  ClockCircleTwoTone,
+  CalendarTwoTone,
+  EnvironmentTwoTone,
+  DollarCircleTwoTone,
+  SlidersTwoTone,
+  AlertTwoTone,
+  WarningTwoTone,
 } from "@ant-design/icons";
+import "./App.css";
 
 const months = [
   "January",
@@ -46,8 +49,69 @@ class App extends React.Component {
       let newArr = arr.map((i) => {
         return parseInt(i, 10);
       });
+
+      data["goneNextMonth"] = false;
+      data["newThisMonth"] = false;
+      let date = new Date();
+      let month = date.getMonth() + 1;
+      let nextMonth = (month % 12) + 1;
+      let prevMonth = month - 1;
+      if (prevMonth === 0) prevMonth = 12;
+
+      if (newArr.indexOf(nextMonth) === -1) data["goneNextMonth"] = true;
+      if (newArr.indexOf(prevMonth) === -1) data["newThisMonth"] = true;
+
       data["Months"] = newArr;
+      data["MonthsInWord"] = translateMonth(newArr);
       df.push(data);
+
+      function translateMonth(arr) {
+        if (arr.length === 12) return "All Year";
+        else {
+          let res = [];
+          let tmpArr = [];
+          tmpArr.push(arr[0]);
+
+          for (let i = 1; i < arr.length; i++) {
+            if (arr[i] - arr[i - 1] === 1) tmpArr.push(arr[i]);
+            else {
+              res.push(tmpArr);
+              tmpArr = [];
+              tmpArr.push(arr[i]);
+            }
+          }
+          res.push(tmpArr);
+          if (arr.indexOf(1) !== -1 && arr.indexOf(12) !== -1) {
+            let last = res.pop();
+            res[0].unshift(...last.reverse());
+          }
+
+          let ret = "";
+          let months = [
+            "Jan.",
+            "Feb.",
+            "Mar.",
+            "Apr.",
+            "May",
+            "Jun.",
+            "Jul.",
+            "Aug.",
+            "Sep.",
+            "Oct.",
+            "Nov.",
+            "Dec.",
+          ];
+          for (let i = 0; i < res.length; i++) {
+            let a = res[i];
+            let length = a.length;
+            if (length === 1) ret = ret + months[a[0] - 1];
+            else ret = ret + months[a[0] - 1] + "-" + months[a[length - 1] - 1];
+            if (i !== res.length - 1) ret += ", ";
+          }
+          console.log(ret);
+          return ret;
+        }
+      }
     }).then(() => {
       let row = df[0];
       for (const [key] of Object.entries(row)) {
@@ -88,7 +152,11 @@ class App extends React.Component {
   filterData = () => {
     let df = this.state.data;
     console.log("df", df);
-    df = df.filter((i) => i["Hemisphere"] === this.state.hemisphere && i["Type"] === this.state.type);
+    df = df.filter(
+      (i) =>
+        i["Hemisphere"] === this.state.hemisphere &&
+        i["Type"] === this.state.type
+    );
 
     // Prepare data for this month
     let date = new Date();
@@ -96,6 +164,7 @@ class App extends React.Component {
     let dataThisMonth = df.filter((i) => i["Months"].indexOf(month) !== -1);
     let names = {};
     let filteredDataThisMonth = [];
+    // eslint-disable-next-line
     dataThisMonth.map((i) => {
       if (!names[i["Name"]]) {
         names[i["Name"]] = 1;
@@ -172,7 +241,7 @@ class App extends React.Component {
                 onChange={this.onTypeChange}
               >
                 <Radio.Button value="Fish">Fish</Radio.Button>
-                <Radio.Button value="Bug">Bug</Radio.Button>
+                <Radio.Button value="Bug">Bugs</Radio.Button>
               </Radio.Group>
             </Row>
 
@@ -200,7 +269,9 @@ class App extends React.Component {
                           Location,
                           Size,
                           Time,
-                          Months,
+                          MonthsInWord,
+                          goneNextMonth,
+                          newThisMonth,
                         }) => (
                           <Col xs={12} sm={8} md={6} lg={4} xl={4}>
                             <Card
@@ -221,7 +292,7 @@ class App extends React.Component {
                               <div className="card-desc">
                                 <Row>
                                   <Col span={4}>
-                                    <EnvironmentFilled />
+                                    <EnvironmentTwoTone twoToneColor="rgb(223, 180, 129)" />
                                   </Col>
                                   <Col span={20}>
                                     <p className="desc-text">{Location}</p>
@@ -229,17 +300,15 @@ class App extends React.Component {
                                 </Row>
                                 <Row>
                                   <Col span={4}>
-                                    <ClockCircleFilled />
+                                    <CalendarTwoTone twoToneColor="rgb(223, 180, 129)" />
                                   </Col>
                                   <Col span={20}>
-                                    <p className="desc-text">
-                                      {Months.toString()}
-                                    </p>
+                                    <p className="desc-text">{MonthsInWord}</p>
                                   </Col>
                                 </Row>
                                 <Row>
                                   <Col span={4}>
-                                    <ClockCircleFilled />
+                                    <ClockCircleTwoTone twoToneColor="rgb(223, 180, 129)" />
                                   </Col>
                                   <Col span={20}>
                                     <p className="desc-text">{Time}</p>
@@ -247,20 +316,46 @@ class App extends React.Component {
                                 </Row>
                                 <Row>
                                   <Col span={4}>
-                                    <DollarCircleFilled />
+                                    <DollarCircleTwoTone twoToneColor="rgb(223, 180, 129)" />
                                   </Col>
                                   <Col span={20}>
                                     <p className="desc-text">{Price}</p>
                                   </Col>
                                 </Row>
-                                {Size && (<Row>
-                                  <Col span={4}>
-                                    <SlidersFilled />
-                                  </Col>
-                                  <Col span={20}>
-                                    <p className="desc-text">{Size}</p>
-                                  </Col>
-                                </Row>)}
+                                {Size && (
+                                  <Row>
+                                    <Col span={4}>
+                                      <SlidersTwoTone twoToneColor="rgb(223, 180, 129)" />
+                                    </Col>
+                                    <Col span={20}>
+                                      <p className="desc-text">{Size}</p>
+                                    </Col>
+                                  </Row>
+                                )}
+                                {goneNextMonth && (
+                                  <Row>
+                                    <Col span={4}>
+                                      <WarningTwoTone twoToneColor="#c09279" />
+                                    </Col>
+                                    <Col span={20}>
+                                      <p className="desc-text">
+                                        Gone Next Month
+                                      </p>
+                                    </Col>
+                                  </Row>
+                                )}
+                                {newThisMonth && (
+                                  <Row>
+                                    <Col span={4}>
+                                      <AlertTwoTone twoToneColor="#71997f" />
+                                    </Col>
+                                    <Col span={20}>
+                                      <p className="desc-text">
+                                        New This Month
+                                      </p>
+                                    </Col>
+                                  </Row>
+                                )}
                               </div>
                             </Card>
                           </Col>
@@ -283,6 +378,16 @@ class App extends React.Component {
                       </Radio.Button>
                     ))}
                   </Radio.Group>
+                  <Row>
+                    <Radio.Group
+                      defaultValue="Fish"
+                      style={{ marginTop: 16 }}
+                      onChange={this.onTypeChange}
+                    >
+                      <Radio.Button value="Fish">Fish</Radio.Button>
+                      <Radio.Button value="Bug">Bugs</Radio.Button>
+                    </Radio.Group>
+                  </Row>
                   <Row style={{ margin: "5px" }}>
                     {this.state.filteredData &&
                       this.state.filteredData.map(
