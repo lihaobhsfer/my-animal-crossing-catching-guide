@@ -121,7 +121,7 @@ class App extends React.Component {
           columns: columns,
         },
         () => {
-          this.filterData();
+          this.sortData();
         }
       );
     });
