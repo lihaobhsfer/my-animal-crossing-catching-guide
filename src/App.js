@@ -1,18 +1,11 @@
 import React from "react";
 import * as d3 from "d3";
 import fishData from "./data/data.csv";
-import { Layout, Table, Radio, Card, Row, Col } from "antd";
+import { Layout, Table, Radio, Card, Row, Col, Button } from "antd";
 import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
-import {
-  ClockCircleTwoTone,
-  CalendarTwoTone,
-  EnvironmentTwoTone,
-  DollarCircleTwoTone,
-  SlidersTwoTone,
-  AlertTwoTone,
-  WarningTwoTone,
-} from "@ant-design/icons";
+import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
 import "./App.css";
+import CustomCard from "./components/CustomCard";
 
 const months = [
   "January",
@@ -37,6 +30,7 @@ class App extends React.Component {
     data: [],
     dataAggregated: [], // stores aggregated month data
     viewMode: "CARD",
+    sortByPrice: "NONE",
   };
 
   componentDidMount() {
@@ -108,14 +102,12 @@ class App extends React.Component {
             else ret = ret + months[a[0] - 1] + "-" + months[a[length - 1] - 1];
             if (i !== res.length - 1) ret += ", ";
           }
-          console.log(ret);
           return ret;
         }
       }
     }).then(() => {
       let row = df[0];
       for (const [key] of Object.entries(row)) {
-        console.log(key);
         if (key === "Month" || key.match("Hemisphere")) {
         } else if (key === "url") {
           columns.push({
@@ -151,7 +143,6 @@ class App extends React.Component {
 
   filterData = () => {
     let df = this.state.data;
-    console.log("df", df);
     df = df.filter(
       (i) =>
         i["Hemisphere"] === this.state.hemisphere &&
@@ -176,6 +167,51 @@ class App extends React.Component {
       filteredData: df,
       filteredDataThisMonth: filteredDataThisMonth,
     });
+  };
+
+  sortData = () => {
+    let type = this.state.sortByPrice;
+
+    let df = this.state.data;
+    if (type === "ASC")
+      df.sort(
+        (a, b) =>
+          parseInt(a.Price.replace(",", ""), 10) -
+            parseInt(b.Price.replace(",", ""), 10) ||
+          a.Name.localeCompare(b.Name)
+      );
+    if (type === "DESC")
+      df.sort(
+        (a, b) =>
+          parseInt(b.Price.replace(",", ""), 10) -
+            parseInt(a.Price.replace(",", ""), 10) ||
+          a.Name.localeCompare(b.Name)
+      );
+    if (type === "NONE") df.sort((a, b) => a.Name.localeCompare(b.Name));
+    this.setState(
+      {
+        data: df,
+      },
+      () => {
+        this.filterData();
+      }
+    );
+  };
+
+  onSortButtonClicked = () => {
+    let sortType = this.state.sortByPrice;
+    if (sortType === "NONE") sortType = "ASC";
+    else if (sortType === "ASC") sortType = "DESC";
+    else sortType = "NONE";
+
+    this.setState(
+      {
+        sortByPrice: sortType,
+      },
+      () => {
+        this.sortData();
+      }
+    );
   };
 
   onMonthChange = (e) => {
@@ -258,106 +294,30 @@ class App extends React.Component {
               this.state.data &&
               this.state.data.length > 0 && (
                 <div>
-                  <h2>Available This Month</h2>
+                  <Row>
+                    <Col span={4}>
+                      <h2>Available This Month</h2>
+                    </Col>
+                    <Col>
+                      <Button onClick={this.onSortButtonClicked}>
+                        Price{" "}
+                        {this.state.sortByPrice === "NONE" ? (
+                          ""
+                        ) : this.state.sortByPrice === "ASC" ? (
+                          <ArrowUpOutlined />
+                        ) : (
+                          <ArrowDownOutlined />
+                        )}
+                      </Button>
+                    </Col>
+                  </Row>
+
                   <Row style={{ margin: "5px" }}>
                     {this.state.filteredDataThisMonth &&
                       this.state.filteredDataThisMonth.map(
-                        ({
-                          url,
-                          Name,
-                          Price,
-                          Location,
-                          Size,
-                          Time,
-                          MonthsInWord,
-                          goneNextMonth,
-                          newThisMonth,
-                        }) => (
+                        ({ ...itemProps }) => (
                           <Col xs={12} sm={8} md={6} lg={4} xl={4}>
-                            <Card
-                              style={{
-                                background: "#fefae3",
-                                margin: "5px",
-                                borderRadius: "10px",
-                              }}
-                            >
-                              <img
-                                style={{ display: "block", margin: "0 auto" }}
-                                src={url}
-                                alt={Name}
-                              />
-                              <div className="title">
-                                <h3>{Name}</h3>
-                              </div>
-                              <div className="card-desc">
-                                <Row>
-                                  <Col span={4}>
-                                    <EnvironmentTwoTone twoToneColor="rgb(223, 180, 129)" />
-                                  </Col>
-                                  <Col span={20}>
-                                    <p className="desc-text">{Location}</p>
-                                  </Col>
-                                </Row>
-                                <Row>
-                                  <Col span={4}>
-                                    <CalendarTwoTone twoToneColor="rgb(223, 180, 129)" />
-                                  </Col>
-                                  <Col span={20}>
-                                    <p className="desc-text">{MonthsInWord}</p>
-                                  </Col>
-                                </Row>
-                                <Row>
-                                  <Col span={4}>
-                                    <ClockCircleTwoTone twoToneColor="rgb(223, 180, 129)" />
-                                  </Col>
-                                  <Col span={20}>
-                                    <p className="desc-text">{Time}</p>
-                                  </Col>
-                                </Row>
-                                <Row>
-                                  <Col span={4}>
-                                    <DollarCircleTwoTone twoToneColor="rgb(223, 180, 129)" />
-                                  </Col>
-                                  <Col span={20}>
-                                    <p className="desc-text">{Price}</p>
-                                  </Col>
-                                </Row>
-                                {Size && (
-                                  <Row>
-                                    <Col span={4}>
-                                      <SlidersTwoTone twoToneColor="rgb(223, 180, 129)" />
-                                    </Col>
-                                    <Col span={20}>
-                                      <p className="desc-text">{Size}</p>
-                                    </Col>
-                                  </Row>
-                                )}
-                                {goneNextMonth && (
-                                  <Row>
-                                    <Col span={4}>
-                                      <WarningTwoTone twoToneColor="#c09279" />
-                                    </Col>
-                                    <Col span={20}>
-                                      <p className="desc-text">
-                                        Gone Next Month
-                                      </p>
-                                    </Col>
-                                  </Row>
-                                )}
-                                {newThisMonth && (
-                                  <Row>
-                                    <Col span={4}>
-                                      <AlertTwoTone twoToneColor="#71997f" />
-                                    </Col>
-                                    <Col span={20}>
-                                      <p className="desc-text">
-                                        New This Month
-                                      </p>
-                                    </Col>
-                                  </Row>
-                                )}
-                              </div>
-                            </Card>
+                            <CustomCard {...itemProps} />
                           </Col>
                         )
                       )}
@@ -390,32 +350,11 @@ class App extends React.Component {
                   </Row>
                   <Row style={{ margin: "5px" }}>
                     {this.state.filteredData &&
-                      this.state.filteredData.map(
-                        ({ url, Name, Price, Location, Size, Time }) => (
-                          <Col xs={12} sm={12} md={8} lg={6} xl={4}>
-                            <Card
-                              style={{
-                                background: "#fefae3",
-                                margin: "5px",
-                                borderRadius: "10px",
-                              }}
-                            >
-                              <img
-                                style={{ display: "block" }}
-                                src={url}
-                                alt={Name}
-                              />
-                              <h3 style={{ overflow: "hidden !important" }}>
-                                {Name}
-                              </h3>
-                              <p className="desc-text">{Location}</p>
-                              <p>{Time}</p>
-                              <p>{Price}</p>
-                              <p>{Size}</p>
-                            </Card>
-                          </Col>
-                        )
-                      )}
+                      this.state.filteredData.map(({ ...itemProps }) => (
+                        <Col xs={12} sm={12} md={8} lg={6} xl={4}>
+                          <CustomCard {...itemProps} />
+                        </Col>
+                      ))}
                   </Row>
                 </div>
               )}
