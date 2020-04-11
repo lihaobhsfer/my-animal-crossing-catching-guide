@@ -23,8 +23,8 @@ class App extends React.Component {
     let df = [];
     let columns = [];
 
-    d3.dsv("|", "https://lihaobhsfer.cn/data.csv",function (data) {
-    // d3.dsv("|", fishData, function (data) {
+    // d3.dsv("|", "https://lihaobhsfer.cn/data.csv",function (data) {
+    d3.dsv("|", fishData, function (data) {
       let arr = data["Months"].replace("[", "").replace("]", "").split(",");
       let newArr = arr.map((i) => {
         return parseInt(i, 10);
