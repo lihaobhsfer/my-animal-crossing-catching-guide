@@ -7,20 +7,6 @@ import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
 import "./App.css";
 import CustomCard from "./components/CustomCard";
 
-const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
 const { Content } = Layout;
 class App extends React.Component {
   state = {
@@ -321,40 +307,6 @@ class App extends React.Component {
                           </Col>
                         )
                       )}
-                  </Row>
-                  <h2>All Cards</h2>
-                  {/* Month check box */}
-                  <Radio.Group
-                    defaultValue="1"
-                    style={{ marginTop: 16, marginLeft: 5, marginRight: 5 }}
-                    onChange={this.onMonthChange}
-                  >
-                    {months.map((month, index) => (
-                      <Radio.Button
-                        value={index + 1 + ""}
-                        style={{ background: "#fefae3" }}
-                      >
-                        {month}
-                      </Radio.Button>
-                    ))}
-                  </Radio.Group>
-                  <Row>
-                    <Radio.Group
-                      defaultValue="Fish"
-                      style={{ marginTop: 16 }}
-                      onChange={this.onTypeChange}
-                    >
-                      <Radio.Button value="Fish">Fish</Radio.Button>
-                      <Radio.Button value="Bug">Bugs</Radio.Button>
-                    </Radio.Group>
-                  </Row>
-                  <Row style={{ margin: "5px" }}>
-                    {this.state.filteredData &&
-                      this.state.filteredData.map(({ ...itemProps }) => (
-                        <Col xs={12} sm={12} md={8} lg={6} xl={4}>
-                          <CustomCard {...itemProps} />
-                        </Col>
-                      ))}
                   </Row>
                 </div>
               )}
