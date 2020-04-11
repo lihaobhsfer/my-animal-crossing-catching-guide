@@ -16,7 +16,7 @@ class App extends React.Component {
     data: [],
     dataAggregated: [], // stores aggregated month data
     viewMode: "CARD",
-    sortByPrice: "NONE",
+    sortByPrice: "DESC",
   };
 
   componentDidMount() {
@@ -241,11 +241,11 @@ class App extends React.Component {
       <div className="container">
         <Layout style={{ backgroundColor: "#cce2cf" }}>
           <Content style={{ maxWidth: "1200px", margin: "0 auto" }}>
-            <h1>Animal Crossing Catch Guide</h1>
+            <h1 className="page-title">Animal Crossing Catch Guide</h1>
             <Row>
               <Radio.Group
+                className="radio-select"
                 defaultValue="Northern Hemisphere"
-                style={{ marginTop: 16 }}
                 onChange={this.onHemisphereChange}
               >
                 <Radio.Button value="Northern Hemisphere">
@@ -258,8 +258,8 @@ class App extends React.Component {
             </Row>
             <Row>
               <Radio.Group
+                className="radio-select"
                 defaultValue="Fish"
-                style={{ marginTop: 16 }}
                 onChange={this.onTypeChange}
               >
                 <Radio.Button value="Fish">Fish</Radio.Button>
@@ -281,11 +281,14 @@ class App extends React.Component {
               this.state.data.length > 0 && (
                 <div>
                   <Row>
-                    <Col span={4}>
+                    <Col sm={12} md={6} lg={4}>
                       <h2>Available This Month</h2>
                     </Col>
                     <Col>
-                      <Button onClick={this.onSortButtonClicked}>
+                      <Button
+                        className="button-select"
+                        onClick={this.onSortButtonClicked}
+                      >
                         Price{" "}
                         {this.state.sortByPrice === "NONE" ? (
                           ""

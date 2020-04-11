@@ -77,3 +77,37 @@ body {
   font-weight: 400;
   color: rgb(128, 90, 45);
 }
+
+.page-title {
+  font-size: 2em;
+  margin: 5px auto;
+  text-align: center;
+  color: #c09279;
+  font-weight: 800;
+}
+
+.radio-select {
+  margin: 5px auto;
+  
+}
+
+.radio-select label{
+  background-color: #fefae3;
+  border-radius: 20px !important;
+}
+
+.radio-select .ant-radio-button-wrapper-checked {
+  background-color: #71997f;
+  color: #fefae3;
+  border-color:  #cce2cf !important;
+  
+}
+.ant-radio-button-wrapper-checked::before{
+  background-color: #cce2cf !important;
+}
+
+
+.button-select{
+  background-color: #fefae3;
+  border-radius: 20px !important;
+}
