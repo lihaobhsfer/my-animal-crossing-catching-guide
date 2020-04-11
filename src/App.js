@@ -1,7 +1,7 @@
 import React from "react";
 import * as d3 from "d3";
 import fishData from "./data/data.csv";
-import { Layout, Table, Radio, Card, Row, Col, Button } from "antd";
+import { Layout, Table, Radio, Row, Col, Button } from "antd";
 import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
 import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
 import "./App.css";
@@ -23,7 +23,7 @@ class App extends React.Component {
     let df = [];
     let columns = [];
 
-    // d3.csv("https://lihaobhsfer.cn/fish.csv",function (data) {
+    // d3.csv("https://lihaobhsfer.cn/data.csv",function (data) {
     d3.dsv("|", fishData, function (data) {
       let arr = data["Months"].replace("[", "").replace("]", "").split(",");
       let newArr = arr.map((i) => {
