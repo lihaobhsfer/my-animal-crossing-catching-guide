@@ -1,13 +1,11 @@
 import React from "react";
 import * as d3 from "d3";
 import fishData from "./data/data.csv";
-import { Layout, Table, Radio, Row, Col, Button } from "antd";
+import { Table, Radio, Row, Col, Button } from "antd";
 import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
 import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
 import "./App.css";
 import CustomCard from "./components/CustomCard";
-
-const { Content } = Layout;
 class App extends React.Component {
   state = {
     hemisphere: "Northern Hemisphere",
@@ -17,6 +15,7 @@ class App extends React.Component {
     dataAggregated: [], // stores aggregated month data
     viewMode: "CARD",
     sortByPrice: "DESC",
+    filterGoneNextMonth: false,
   };
 
   componentDidMount() {
@@ -135,6 +134,9 @@ class App extends React.Component {
         i["Type"] === this.state.type
     );
 
+    if (this.state.filterGoneNextMonth)
+      df = df.filter((i) => i["goneNextMonth"] === true);
+
     // Prepare data for this month
     let date = new Date();
     let month = date.getMonth() + 1;
@@ -235,12 +237,22 @@ class App extends React.Component {
       }
     );
   };
+  onFilterGoneNextMonthButtonClicked = () => {
+    let filterStuff = this.state.filterGoneNextMonth;
+    this.setState(
+      {
+        filterGoneNextMonth: !filterStuff,
+      },
+      () => {
+        this.sortData();
+      }
+    );
+  };
 
   render() {
     return (
       <div className="container">
-        <Layout style={{ backgroundColor: "#cce2cf" }}>
-          <Content style={{ maxWidth: "1200px", margin: "0 auto" }}>
+          <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
             <h1 className="page-title">Animal Crossing Catch Guide</h1>
             <Row>
               <Radio.Group
@@ -279,8 +291,8 @@ class App extends React.Component {
             {this.state.viewMode === "CARD" &&
               this.state.data &&
               this.state.data.length > 0 && (
-                <div>
-                  <Row>
+                <div style={{width: "100%"}}>
+                  <Row style={{display:"flex", alignItems:"center"}}>
                     <Col sm={12} md={6} lg={4}>
                       <h2>Available This Month</h2>
                     </Col>
@@ -299,6 +311,18 @@ class App extends React.Component {
                         )}
                       </Button>
                     </Col>
+                    <Col>
+                      <Button
+                        className={
+                          this.state.filterGoneNextMonth
+                            ? "button-filter-checked"
+                            : "button-filter"
+                        }
+                        onClick={this.onFilterGoneNextMonthButtonClicked}
+                      >
+                        Gone Next Month
+                      </Button>
+                    </Col>
                   </Row>
 
                   <Row style={{ margin: "5px" }}>
@@ -313,8 +337,7 @@ class App extends React.Component {
                   </Row>
                 </div>
               )}
-          </Content>
-        </Layout>
+          </div>
       </div>
     );
   }
