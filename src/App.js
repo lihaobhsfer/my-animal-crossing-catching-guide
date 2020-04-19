@@ -16,6 +16,7 @@ class App extends React.Component {
     viewMode: "CARD",
     sortByPrice: "DESC",
     filterGoneNextMonth: false,
+    filterNewThisMonth: false
   };
 
   componentDidMount() {
@@ -136,6 +137,8 @@ class App extends React.Component {
 
     if (this.state.filterGoneNextMonth)
       df = df.filter((i) => i["goneNextMonth"] === true);
+    if (this.state.filterNewThisMonth)
+      df = df.filter(i => i["newThisMonth"] === true)
 
     // Prepare data for this month
     let date = new Date();
@@ -249,6 +252,18 @@ class App extends React.Component {
     );
   };
 
+  onFilterGNewThisMonthButtonClicked = () => {
+    let filterStuff = this.state.filterNewThisMonth;
+    this.setState(
+      {
+        filterNewThisMonth: !filterStuff,
+      },
+      () => {
+        this.sortData();
+      }
+    );
+  };
+
   render() {
     return (
       <div className="container">
@@ -321,6 +336,18 @@ class App extends React.Component {
                         onClick={this.onFilterGoneNextMonthButtonClicked}
                       >
                         Gone Next Month
+                      </Button>
+                    </Col>
+                    <Col>
+                      <Button
+                        className={
+                          this.state.filterNewThisMonth
+                            ? "button-filter-checked"
+                            : "button-filter"
+                        }
+                        onClick={this.onFilterGNewThisMonthButtonClicked}
+                      >
+                        New This Month
                       </Button>
                     </Col>
                   </Row>
