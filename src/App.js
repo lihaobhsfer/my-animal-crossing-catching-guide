@@ -15,8 +15,10 @@ class App extends React.Component {
     dataAggregated: [], // stores aggregated month data
     viewMode: "CARD",
     sortByPrice: "DESC",
-    filterGoneNextMonth: false,
-    filterNewThisMonth: false
+    filterGoneNextMonth: true,
+    filterNewThisMonth: false,
+    showThisMonth: true,
+    showAll: true
   };
 
   componentDidMount() {
@@ -139,24 +141,24 @@ class App extends React.Component {
       df = df.filter((i) => i["goneNextMonth"] === true);
     if (this.state.filterNewThisMonth)
       df = df.filter(i => i["newThisMonth"] === true)
-
-    // Prepare data for this month
+     
     let date = new Date();
-    let month = date.getMonth() + 1;
-    let dataThisMonth = df.filter((i) => i["Months"].indexOf(month) !== -1);
+    let month = date.getMonth() + 1
+    if(this.state.showThisMonth)
+      df = df.filter(i => i["Months"].indexOf(month) !== -1)
+    // Prepare data for this month
     let names = {};
-    let filteredDataThisMonth = [];
+    let filteredData = [];
     // eslint-disable-next-line
-    dataThisMonth.map((i) => {
+    df.map((i) => {
       if (!names[i["Name"]]) {
         names[i["Name"]] = 1;
-        filteredDataThisMonth.push(i);
+        filteredData.push(i);
       }
     });
-    console.log(filteredDataThisMonth.length);
+    console.log(filteredData.length);
     this.setState({
-      filteredData: df,
-      filteredDataThisMonth: filteredDataThisMonth,
+      filteredData: filteredData,
     });
   };
 
@@ -264,6 +266,14 @@ class App extends React.Component {
     );
   };
 
+  onShowThisMonthClicked = () => {
+    let filterStuff = this.state.showThisMonth;
+    this.setState({
+      showThisMonth: !filterStuff
+    },() => {
+      this.sortData()
+    })
+  }
   render() {
     return (
       <div className="container">
@@ -309,7 +319,11 @@ class App extends React.Component {
                 <div style={{width: "100%"}}>
                   <Row style={{display:"flex", alignItems:"center"}}>
                     <Col sm={12} md={6} lg={4}>
-                      <h2>Available This Month</h2>
+                      <Button className={
+                        this.state.showThisMonth
+                        ? "button-filter-checked"
+                        : "button-filter"
+                      } onClick={this.onShowThisMonthClicked}>Available This Month</Button>
                     </Col>
                     <Col>
                       <Button
@@ -353,8 +367,8 @@ class App extends React.Component {
                   </Row>
 
                   <Row style={{ margin: "5px" }}>
-                    {this.state.filteredDataThisMonth &&
-                      this.state.filteredDataThisMonth.map(
+                    {this.state.filteredData &&
+                      this.state.filteredData.map(
                         ({ ...itemProps }) => (
                           <Col xs={12} sm={8} md={6} lg={4} xl={4}>
                             <CustomCard {...itemProps} />
