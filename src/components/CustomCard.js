@@ -1,7 +1,7 @@
 // TODO: Icon for "Available Now", and display near the pic
 
 import React from "react";
-import {Card, Row, Col} from "antd"
+import { Card, Row, Col } from "antd";
 import {
   ClockCircleTwoTone,
   CalendarTwoTone,
@@ -9,10 +9,11 @@ import {
   DollarCircleTwoTone,
   SlidersTwoTone,
   AlertTwoTone,
-  WarningTwoTone
+  WarningTwoTone,
 } from "@ant-design/icons";
 
-const CustomCard = ({url,
+const CustomCard = ({
+  url,
   Name,
   Price,
   Location,
@@ -21,7 +22,8 @@ const CustomCard = ({url,
   MonthsInWord,
   goneNextMonth,
   newThisMonth,
-  availableNow}) => (
+  availableNow,
+}) => (
   <Card
     style={{
       background: "#fefae3",
@@ -34,6 +36,16 @@ const CustomCard = ({url,
       <h3>{Name}</h3>
     </div>
     <div className="card-desc">
+      {availableNow && (
+        <Row>
+          <Col span={4}>
+            <AlertTwoTone twoToneColor="#71997f" />
+          </Col>
+          <Col span={20}>
+            <p className="desc-text">Available Now</p>
+          </Col>
+        </Row>
+      )}
       <Row>
         <Col span={4}>
           <EnvironmentTwoTone twoToneColor="rgb(223, 180, 129)" />
@@ -96,18 +108,8 @@ const CustomCard = ({url,
           </Col>
         </Row>
       )}
-      {availableNow && (
-        <Row>
-          <Col span={4}>
-            <AlertTwoTone twoToneColor="#71997f" />
-          </Col>
-          <Col span={20}>
-            <p className="desc-text">Available Now</p>
-          </Col>
-        </Row>
-      )}
     </div>
   </Card>
 );
 
-export default CustomCard
+export default CustomCard;
