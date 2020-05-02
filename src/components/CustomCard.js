@@ -1,3 +1,5 @@
+// TODO: Icon for "Available Now", and display near the pic
+
 import React from "react";
 import {Card, Row, Col} from "antd"
 import {
@@ -18,7 +20,8 @@ const CustomCard = ({url,
   Time,
   MonthsInWord,
   goneNextMonth,
-  newThisMonth}) => (
+  newThisMonth,
+  availableNow}) => (
   <Card
     style={{
       background: "#fefae3",
@@ -90,6 +93,16 @@ const CustomCard = ({url,
           </Col>
           <Col span={20}>
             <p className="desc-text">New This Month</p>
+          </Col>
+        </Row>
+      )}
+      {availableNow && (
+        <Row>
+          <Col span={4}>
+            <AlertTwoTone twoToneColor="#71997f" />
+          </Col>
+          <Col span={20}>
+            <p className="desc-text">Available Now</p>
           </Col>
         </Row>
       )}

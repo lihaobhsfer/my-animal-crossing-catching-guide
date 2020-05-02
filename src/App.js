@@ -25,8 +25,8 @@ class App extends React.Component {
     let df = [];
     let columns = [];
 
-    d3.dsv("|", "https://lihaobhsfer.cn/data.csv",function (data) {
-    // d3.dsv("|", fishData, function (data) {
+    // d3.dsv("|", "https://lihaobhsfer.cn/data.csv",function (data) {
+    d3.dsv("|", fishData, function (data) {
       let arr = data["Months"].replace("[", "").replace("]", "").split(",");
       let newArr = arr.map((i) => {
         return parseInt(i, 10);
@@ -45,7 +45,37 @@ class App extends React.Component {
 
       data["Months"] = newArr;
       data["MonthsInWord"] = translateMonth(newArr);
+      data["availableNow"] = checkAvailableNow(data["Time"])
       df.push(data);
+
+      function checkAvailableNow (timeInWords) {
+        let date = new Date()
+        let currentHour = date.getHours()
+        console.log("current hour is", currentHour)
+        console.log(timeInWords)
+        if (timeInWords === "All day"){
+          console.log("all day")
+          return true
+        }
+        let ret = []
+        if(timeInWords.match(/[0-9]+pm - [0-9]+am/)){
+          let numbers = timeInWords.match(/[0-9]+/g).map(i => parseInt(i))
+          console.log(numbers)
+          for(let j = 0; j<=numbers[1]; j++) ret.push(j)
+          for(let j = numbers[0] + 12; j <= 23; j++) ret.push(j)
+        } else if(timeInWords.match(/[0-9]+am - [0-9]+pm/)){
+          let numbers = timeInWords.match(/[0-9]+/g).map(i => parseInt(i))
+          console.log(numbers)
+          for(let i = numbers[0]; i<=numbers[1]+12; i++) ret.push(i)
+        }else if(timeInWords.match(/[0-9]+am - [0-9]+am & [0-9]+pm - [0-9]+pm/)){
+          let numbers = timeInWords.match(/[0-9]+/g).map(i => parseInt(i))
+          console.log(numbers)
+          for(let i = numbers[0]; i<=numbers[1]; i++) ret.push(i)
+          for(let i = numbers[2]; i<=numbers[3]; i++) ret.push(i+12)
+        }
+        console.log(ret)
+        return ret.indexOf(currentHour) !== -1
+      }
 
       function translateMonth(arr) {
         if (arr.length === 12) return "All Year";
