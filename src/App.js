@@ -25,8 +25,8 @@ class App extends React.Component {
     let df = [];
     let columns = [];
 
-    // d3.dsv("|", "https://lihaobhsfer.cn/data.csv",function (data) {
-    d3.dsv("|", fishData, function (data) {
+    d3.dsv("|", "https://lihaobhsfer.cn/data.csv",function (data) {
+    // d3.dsv("|", fishData, function (data) {
       let arr = data["Months"].replace("[", "").replace("]", "").split(",");
       let newArr = arr.map((i) => {
         return parseInt(i, 10);
@@ -41,7 +41,7 @@ class App extends React.Component {
       if (prevMonth === 0) prevMonth = 12;
 
       if (newArr.indexOf(nextMonth) === -1) data["goneNextMonth"] = true;
-      if (newArr.indexOf(prevMonth) === -1) data["newThisMonth"] = true;
+      if (newArr.indexOf(prevMonth) === -1 && newArr.indexOf(month) !== -1) data["newThisMonth"] = true;
 
       data["Months"] = newArr;
       data["MonthsInWord"] = translateMonth(newArr);
