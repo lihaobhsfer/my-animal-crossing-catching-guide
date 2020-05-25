@@ -40,7 +40,7 @@ class App extends React.Component {
       let prevMonth = month - 1;
       if (prevMonth === 0) prevMonth = 12;
 
-      if (newArr.indexOf(nextMonth) === -1) data["goneNextMonth"] = true;
+      if (newArr.indexOf(month) !== -1 && newArr.indexOf(nextMonth) === -1) data["goneNextMonth"] = true;
       if (newArr.indexOf(prevMonth) === -1 && newArr.indexOf(month) !== -1) data["newThisMonth"] = true;
 
       data["Months"] = newArr;
