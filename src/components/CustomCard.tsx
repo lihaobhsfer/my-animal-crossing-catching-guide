@@ -12,6 +12,19 @@ import {
   WarningTwoTone,
 } from "@ant-design/icons";
 
+type cardProps = {
+  url: string,
+  Name: string,
+  Price: number,
+  Location: string,
+  Size: string,
+  Time: string,
+  MonthsInWord: string,
+  goneNextMonth: boolean,
+  newThisMonth: boolean,
+  availableNow: boolean
+}
+
 const CustomCard = ({
   url,
   Name,
@@ -23,7 +36,7 @@ const CustomCard = ({
   goneNextMonth,
   newThisMonth,
   availableNow,
-}) => (
+}: cardProps) => (
   <Card
     style={{
       background: "#fefae3",

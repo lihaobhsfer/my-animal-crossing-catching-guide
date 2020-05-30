@@ -1,11 +1,14 @@
 import React from "react";
 import * as d3 from "d3";
-import fishData from "./data/data.csv";
+
 import { Table, Radio, Row, Col, Button } from "antd";
 import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
 import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
 import "./App.css";
 import CustomCard from "./components/CustomCard";
+import { DSVRowAny } from "d3";
+
+
 class App extends React.Component {
   state = {
     hemisphere: "Northern Hemisphere",
@@ -18,17 +21,18 @@ class App extends React.Component {
     filterGoneNextMonth: true,
     filterNewThisMonth: false,
     showThisMonth: true,
-    showAll: true
+    showAll: true,
+    filteredData: []
   };
 
   componentDidMount() {
-    let df = [];
-    let columns = [];
+    let df: Array<any>= [];
+    let columns: Array<any> = [];
 
     // d3.dsv("|", "https://lihaobhsfer.cn/data.csv",function (data) {
-    d3.dsv("|", fishData, function (data) {
+    d3.dsv("|", `./data/data.csv`, (data: DSVRowAny):any => {
       let arr = data["Months"].replace("[", "").replace("]", "").split(",");
-      let newArr = arr.map((i) => {
+      let newArr = arr.map((i:any) => {
         return parseInt(i, 10);
       });
 
@@ -48,7 +52,7 @@ class App extends React.Component {
       data["availableNow"] = checkAvailableNow(data["Time"])
       df.push(data);
 
-      function checkAvailableNow (timeInWords) {
+      function checkAvailableNow (timeInWords: string):boolean {
         let date = new Date()
         let currentHour = date.getHours()
         console.log("current hour is", currentHour)
@@ -58,17 +62,18 @@ class App extends React.Component {
           return true
         }
         let ret = []
+        let regex: RegExp = /[0-9]+/g
         if(timeInWords.match(/[0-9]+pm - [0-9]+am/)){
-          let numbers = timeInWords.match(/[0-9]+/g).map(i => parseInt(i))
+          let numbers:number[] = timeInWords.match(regex)!.map(i => parseInt(i))
           console.log(numbers)
           for(let j = 0; j<=numbers[1]; j++) ret.push(j)
           for(let j = numbers[0] + 12; j <= 23; j++) ret.push(j)
         } else if(timeInWords.match(/[0-9]+am - [0-9]+pm/)){
-          let numbers = timeInWords.match(/[0-9]+/g).map(i => parseInt(i))
+          let numbers = timeInWords.match(/[0-9]+/g)!.map(i => parseInt(i))
           console.log(numbers)
           for(let i = numbers[0]; i<=numbers[1]+12; i++) ret.push(i)
         }else if(timeInWords.match(/[0-9]+am - [0-9]+am & [0-9]+pm - [0-9]+pm/)){
-          let numbers = timeInWords.match(/[0-9]+/g).map(i => parseInt(i))
+          let numbers = timeInWords.match(/[0-9]+/g)!.map(i => parseInt(i))
           console.log(numbers)
           for(let i = numbers[0]; i<=numbers[1]; i++) ret.push(i)
           for(let i = numbers[2]; i<=numbers[3]; i++) ret.push(i+12)
@@ -77,7 +82,7 @@ class App extends React.Component {
         return ret.indexOf(currentHour) !== -1
       }
 
-      function translateMonth(arr) {
+      function translateMonth(arr: number[]) {
         if (arr.length === 12) return "All Year";
         else {
           let res = [];
@@ -95,7 +100,7 @@ class App extends React.Component {
           res.push(tmpArr);
           if (arr.indexOf(1) !== -1 && arr.indexOf(12) !== -1) {
             let last = res.pop();
-            res[0].unshift(...last.reverse());
+            res[0].unshift(...last!.reverse());
           }
 
           let ret = "";
@@ -132,7 +137,7 @@ class App extends React.Component {
             title: "Image",
             key: "url",
             dataIndex: "url",
-            render: (url) => {
+            render: (url: string) => {
               return <img src={url} alt="img" />;
             },
           });
@@ -156,11 +161,12 @@ class App extends React.Component {
           this.sortData();
         }
       );
+
     });
   }
 
   filterData = () => {
-    let df = this.state.data;
+    let df:any[] = this.state.data;
     df = df.filter(
       (i) =>
         i["Hemisphere"] === this.state.hemisphere &&
@@ -174,15 +180,16 @@ class App extends React.Component {
      
     let date = new Date();
     let month = date.getMonth() + 1
-    if(this.state.showThisMonth)
-      df = df.filter(i => i["Months"].indexOf(month) !== -1)
+    if(this.state.showThisMonth){
+      df = df.filter((i)=> i["Months"].indexOf(month) !== -1)
+    }      
     // Prepare data for this month
-    let names = {};
-    let filteredData = [];
+    let names = new Map<string, number>();
+    let filteredData: any[] = [];
     // eslint-disable-next-line
     df.map((i) => {
-      if (!names[i["Name"]]) {
-        names[i["Name"]] = 1;
+      if (!names.get(i["Name"])) {
+        names.set(i["Name"], 1);
         filteredData.push(i);
       }
     });
@@ -198,19 +205,19 @@ class App extends React.Component {
     let df = this.state.data;
     if (type === "ASC")
       df.sort(
-        (a, b) =>
+        (a:any, b:any) =>
           parseInt(a.Price.replace(",", ""), 10) -
             parseInt(b.Price.replace(",", ""), 10) ||
           a.Name.localeCompare(b.Name)
       );
     if (type === "DESC")
       df.sort(
-        (a, b) =>
+        (a:any, b:any) =>
           parseInt(b.Price.replace(",", ""), 10) -
             parseInt(a.Price.replace(",", ""), 10) ||
           a.Name.localeCompare(b.Name)
       );
-    if (type === "NONE") df.sort((a, b) => a.Name.localeCompare(b.Name));
+    if (type === "NONE") df.sort((a:any, b:any) => a.Name.localeCompare(b.Name));
     this.setState(
       {
         data: df,
@@ -237,7 +244,7 @@ class App extends React.Component {
     );
   };
 
-  onMonthChange = (e) => {
+  onMonthChange = (e:any) => {
     console.log(e.target.value);
     this.setState(
       {
@@ -249,7 +256,7 @@ class App extends React.Component {
     );
   };
 
-  onHemisphereChange = (e) => {
+  onHemisphereChange = (e:any) => {
     console.log(e.target.value);
     this.setState(
       {
@@ -261,7 +268,7 @@ class App extends React.Component {
     );
   };
 
-  onTypeChange = (e) => {
+  onTypeChange = (e:any) => {
     console.log(e.target.value);
     this.setState(
       {
@@ -335,14 +342,14 @@ class App extends React.Component {
             </Row>
 
             {/* Table, view mode is "LIST" */}
-            {this.state.viewMode === "LIST" &&
+            {/* {this.state.viewMode === "LIST" &&
               this.state.data &&
               this.state.data.length > 0 && (
                 <Table
                   columns={this.state.columns}
                   dataSource={this.state.filteredData}
                 />
-              )}
+              )} */}
             {this.state.viewMode === "CARD" &&
               this.state.data &&
               this.state.data.length > 0 && (
@@ -399,7 +406,7 @@ class App extends React.Component {
                   <Row style={{ margin: "5px" }}>
                     {this.state.filteredData &&
                       this.state.filteredData.map(
-                        ({ ...itemProps }) => (
+                        ({ ...itemProps }:any) => (
                           <Col xs={12} sm={8} md={6} lg={4} xl={4}>
                             <CustomCard {...itemProps} />
                           </Col>
