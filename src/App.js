@@ -15,10 +15,10 @@ class App extends React.Component {
     dataAggregated: [], // stores aggregated month data
     viewMode: "CARD",
     sortByPrice: "DESC",
-    filterGoneNextMonth: true,
-    filterNewThisMonth: false,
+    filterGoneNextMonth: false,
+    filterNewThisMonth: true,
     showThisMonth: true,
-    showAll: true
+    showAll: true,
   };
 
   componentDidMount() {
@@ -40,41 +40,45 @@ class App extends React.Component {
       let prevMonth = month - 1;
       if (prevMonth === 0) prevMonth = 12;
 
-      if (newArr.indexOf(month) !== -1 && newArr.indexOf(nextMonth) === -1) data["goneNextMonth"] = true;
-      if (newArr.indexOf(prevMonth) === -1 && newArr.indexOf(month) !== -1) data["newThisMonth"] = true;
+      if (newArr.indexOf(month) !== -1 && newArr.indexOf(nextMonth) === -1)
+        data["goneNextMonth"] = true;
+      if (newArr.indexOf(prevMonth) === -1 && newArr.indexOf(month) !== -1)
+        data["newThisMonth"] = true;
 
       data["Months"] = newArr;
       data["MonthsInWord"] = translateMonth(newArr);
-      data["availableNow"] = checkAvailableNow(data["Time"])
+      data["availableNow"] = checkAvailableNow(data["Time"]);
       df.push(data);
 
-      function checkAvailableNow (timeInWords) {
-        let date = new Date()
-        let currentHour = date.getHours()
-        console.log("current hour is", currentHour)
-        console.log(timeInWords)
-        if (timeInWords === "All day"){
-          console.log("all day")
-          return true
+      function checkAvailableNow(timeInWords) {
+        let date = new Date();
+        let currentHour = date.getHours();
+        // console.log("current hour is", currentHour)
+        // console.log(timeInWords)
+        if (timeInWords === "All day") {
+          // console.log("all day")
+          return true;
         }
-        let ret = []
-        if(timeInWords.match(/[0-9]+pm - [0-9]+am/)){
-          let numbers = timeInWords.match(/[0-9]+/g).map(i => parseInt(i))
-          console.log(numbers)
-          for(let j = 0; j<=numbers[1]; j++) ret.push(j)
-          for(let j = numbers[0] + 12; j <= 23; j++) ret.push(j)
-        } else if(timeInWords.match(/[0-9]+am - [0-9]+pm/)){
-          let numbers = timeInWords.match(/[0-9]+/g).map(i => parseInt(i))
-          console.log(numbers)
-          for(let i = numbers[0]; i<=numbers[1]+12; i++) ret.push(i)
-        }else if(timeInWords.match(/[0-9]+am - [0-9]+am & [0-9]+pm - [0-9]+pm/)){
-          let numbers = timeInWords.match(/[0-9]+/g).map(i => parseInt(i))
-          console.log(numbers)
-          for(let i = numbers[0]; i<=numbers[1]; i++) ret.push(i)
-          for(let i = numbers[2]; i<=numbers[3]; i++) ret.push(i+12)
+        let ret = [];
+        if (timeInWords.match(/[0-9]+pm - [0-9]+am/)) {
+          let numbers = timeInWords.match(/[0-9]+/g).map((i) => parseInt(i));
+          // console.log(numbers)
+          for (let j = 0; j <= numbers[1]; j++) ret.push(j);
+          for (let j = numbers[0] + 12; j <= 23; j++) ret.push(j);
+        } else if (timeInWords.match(/[0-9]+am - [0-9]+pm/)) {
+          let numbers = timeInWords.match(/[0-9]+/g).map((i) => parseInt(i));
+          // console.log(numbers)
+          for (let i = numbers[0]; i <= numbers[1] + 12; i++) ret.push(i);
+        } else if (
+          timeInWords.match(/[0-9]+am - [0-9]+am & [0-9]+pm - [0-9]+pm/)
+        ) {
+          let numbers = timeInWords.match(/[0-9]+/g).map((i) => parseInt(i));
+          // console.log(numbers)
+          for (let i = numbers[0]; i <= numbers[1]; i++) ret.push(i);
+          for (let i = numbers[2]; i <= numbers[3]; i++) ret.push(i + 12);
         }
-        console.log(ret)
-        return ret.indexOf(currentHour) !== -1
+        // console.log(ret)
+        return ret.indexOf(currentHour) !== -1;
       }
 
       function translateMonth(arr) {
@@ -153,7 +157,7 @@ class App extends React.Component {
           columns: columns,
         },
         () => {
-          this.sortData();
+          this.filterData();
         }
       );
     });
@@ -170,12 +174,12 @@ class App extends React.Component {
     if (this.state.filterGoneNextMonth)
       df = df.filter((i) => i["goneNextMonth"] === true);
     if (this.state.filterNewThisMonth)
-      df = df.filter(i => i["newThisMonth"] === true)
-     
+      df = df.filter((i) => i["newThisMonth"] === true);
+
     let date = new Date();
-    let month = date.getMonth() + 1
-    if(this.state.showThisMonth)
-      df = df.filter(i => i["Months"].indexOf(month) !== -1)
+    let month = date.getMonth() + 1;
+    if (this.state.showThisMonth)
+      df = df.filter((i) => i["Months"].indexOf(month) !== -1);
     // Prepare data for this month
     let names = {};
     let filteredData = [];
@@ -187,22 +191,26 @@ class App extends React.Component {
       }
     });
     console.log(filteredData.length);
-    this.setState({
-      filteredData: filteredData,
-    });
+    this.setState(
+      {
+        filteredData: filteredData,
+      },
+      () => {
+        this.sortData();
+      }
+    );
   };
 
   sortData = () => {
     let type = this.state.sortByPrice;
 
-    let df = this.state.data;
+    let df = this.state.filteredData;
     if (type === "ASC")
-      df.sort(
-        (a, b) =>
-          parseInt(a.Price.replace(",", ""), 10) -
-            parseInt(b.Price.replace(",", ""), 10) ||
-          a.Name.localeCompare(b.Name)
-      );
+      df.sort((a, b) => {
+        parseInt(a.Price.replace(",", ""), 10) -
+          parseInt(b.Price.replace(",", ""), 10) ||
+          a.Name.localeCompare(b.Name);
+      });
     if (type === "DESC")
       df.sort(
         (a, b) =>
@@ -211,14 +219,32 @@ class App extends React.Component {
           a.Name.localeCompare(b.Name)
       );
     if (type === "NONE") df.sort((a, b) => a.Name.localeCompare(b.Name));
-    this.setState(
-      {
-        data: df,
-      },
-      () => {
-        this.filterData();
+    let dfAvailable = df.filter((a) => a.availableNow);
+    let dfNotAvailable = df.filter((a) => !a.availableNow);
+    df = [...dfAvailable, ...dfNotAvailable];
+    let dfMap = {};
+    df.map((i) => {
+      if (!dfMap[i["Location"]]) {
+        dfMap[i["Location"]] = [];
       }
-    );
+      dfMap[i["Location"]].push(i);
+      return null;
+    });
+    console.log(dfMap);
+    df = [];
+    for (let [key, val] of Object.entries(dfMap)) {
+      console.log(key, val);
+      
+      if(key==="Sea") df.push(val);
+      if(key==="Sea (Raining)") df.push(val);
+      if(key==="Pier") df.push(val);
+      if(key==="River") df.push(val);
+      if(key==="River (Clifftop") df.push(val);
+      if(key==="Pond") df.push(val);
+    }
+    this.setState({
+      sortedData: df,
+    });
   };
 
   onSortButtonClicked = () => {
@@ -238,7 +264,7 @@ class App extends React.Component {
   };
 
   onMonthChange = (e) => {
-    console.log(e.target.value);
+    // console.log(e.target.value);
     this.setState(
       {
         month: e.target.value,
@@ -250,7 +276,7 @@ class App extends React.Component {
   };
 
   onHemisphereChange = (e) => {
-    console.log(e.target.value);
+    // console.log(e.target.value);
     this.setState(
       {
         hemisphere: e.target.value,
@@ -262,7 +288,7 @@ class App extends React.Component {
   };
 
   onTypeChange = (e) => {
-    console.log(e.target.value);
+    // console.log(e.target.value);
     this.setState(
       {
         type: e.target.value,
@@ -279,7 +305,7 @@ class App extends React.Component {
         filterGoneNextMonth: !filterStuff,
       },
       () => {
-        this.sortData();
+        this.filterData();
       }
     );
   };
@@ -291,124 +317,139 @@ class App extends React.Component {
         filterNewThisMonth: !filterStuff,
       },
       () => {
-        this.sortData();
+        this.filterData();
       }
     );
   };
 
   onShowThisMonthClicked = () => {
     let filterStuff = this.state.showThisMonth;
-    this.setState({
-      showThisMonth: !filterStuff
-    },() => {
-      this.sortData()
-    })
-  }
+    this.setState(
+      {
+        showThisMonth: !filterStuff,
+      },
+      () => {
+        this.filterData();
+      }
+    );
+  };
   render() {
     return (
       <div className="container">
-          <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-            <h1 className="page-title">Animal Crossing Catch Guide</h1>
-            <Row>
-              <Radio.Group
-                className="radio-select"
-                defaultValue="Northern Hemisphere"
-                onChange={this.onHemisphereChange}
-              >
-                <Radio.Button value="Northern Hemisphere">
-                  Northern Hemisphere
-                </Radio.Button>
-                <Radio.Button value="Southern Hemisphere">
-                  Southern Hemisphere
-                </Radio.Button>
-              </Radio.Group>
-            </Row>
-            <Row>
-              <Radio.Group
-                className="radio-select"
-                defaultValue="Fish"
-                onChange={this.onTypeChange}
-              >
-                <Radio.Button value="Fish">Fish</Radio.Button>
-                <Radio.Button value="Bug">Bugs</Radio.Button>
-              </Radio.Group>
-            </Row>
+        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+          <h1 className="page-title">Animal Crossing Catch Guide</h1>
+          <Row>
+            <Radio.Group
+              className="radio-select"
+              defaultValue="Northern Hemisphere"
+              onChange={this.onHemisphereChange}
+            >
+              <Radio.Button value="Northern Hemisphere">
+                Northern Hemisphere
+              </Radio.Button>
+              <Radio.Button value="Southern Hemisphere">
+                Southern Hemisphere
+              </Radio.Button>
+            </Radio.Group>
+          </Row>
+          <Row>
+            <Radio.Group
+              className="radio-select"
+              defaultValue="Fish"
+              onChange={this.onTypeChange}
+            >
+              <Radio.Button value="Fish">Fish</Radio.Button>
+              <Radio.Button value="Bug">Bugs</Radio.Button>
+            </Radio.Group>
+          </Row>
 
-            {/* Table, view mode is "LIST" */}
-            {this.state.viewMode === "LIST" &&
-              this.state.data &&
-              this.state.data.length > 0 && (
-                <Table
-                  columns={this.state.columns}
-                  dataSource={this.state.filteredData}
-                />
-              )}
-            {this.state.viewMode === "CARD" &&
-              this.state.data &&
-              this.state.data.length > 0 && (
-                <div style={{width: "100%"}}>
-                  <Row style={{display:"flex", alignItems:"center"}}>
-                    <Col sm={12} md={6} lg={4}>
-                      <Button className={
+          {/* Table, view mode is "LIST" */}
+          {this.state.viewMode === "LIST" &&
+            this.state.data &&
+            this.state.data.length > 0 && (
+              <Table
+                columns={this.state.columns}
+                dataSource={this.state.filteredData}
+              />
+            )}
+          {this.state.viewMode === "CARD" &&
+            this.state.data &&
+            this.state.data.length > 0 && (
+              <div style={{ width: "100%" }}>
+                <Row style={{ display: "flex", alignItems: "center" }}>
+                  <Col sm={12} md={6} lg={4}>
+                    <Button
+                      className={
                         this.state.showThisMonth
-                        ? "button-filter-checked"
-                        : "button-filter"
-                      } onClick={this.onShowThisMonthClicked}>Available This Month</Button>
-                    </Col>
-                    <Col>
-                      <Button
-                        className="button-select"
-                        onClick={this.onSortButtonClicked}
-                      >
-                        Price{" "}
-                        {this.state.sortByPrice === "NONE" ? (
-                          ""
-                        ) : this.state.sortByPrice === "ASC" ? (
-                          <ArrowUpOutlined />
-                        ) : (
-                          <ArrowDownOutlined />
-                        )}
-                      </Button>
-                    </Col>
-                    <Col>
-                      <Button
-                        className={
-                          this.state.filterGoneNextMonth
-                            ? "button-filter-checked"
-                            : "button-filter"
-                        }
-                        onClick={this.onFilterGoneNextMonthButtonClicked}
-                      >
-                        Gone Next Month
-                      </Button>
-                    </Col>
-                    <Col>
-                      <Button
-                        className={
-                          this.state.filterNewThisMonth
-                            ? "button-filter-checked"
-                            : "button-filter"
-                        }
-                        onClick={this.onFilterGNewThisMonthButtonClicked}
-                      >
-                        New This Month
-                      </Button>
-                    </Col>
-                  </Row>
-
-                  <Row style={{ margin: "5px" }}>
-                    {this.state.filteredData &&
-                      this.state.filteredData.map(
-                        ({ ...itemProps }) => (
-                          <Col xs={12} sm={8} md={6} lg={4} xl={4}>
-                            <CustomCard {...itemProps} />
-                          </Col>
-                        )
+                          ? "button-filter-checked"
+                          : "button-filter"
+                      }
+                      onClick={this.onShowThisMonthClicked}
+                    >
+                      Available This Month
+                    </Button>
+                  </Col>
+                  <Col>
+                    <Button
+                      className="button-select"
+                      onClick={this.onSortButtonClicked}
+                    >
+                      Price{" "}
+                      {this.state.sortByPrice === "NONE" ? (
+                        ""
+                      ) : this.state.sortByPrice === "ASC" ? (
+                        <ArrowUpOutlined />
+                      ) : (
+                        <ArrowDownOutlined />
                       )}
-                  </Row>
-                </div>
-              )}
-          </div>
+                    </Button>
+                  </Col>
+                  <Col>
+                    <Button
+                      className={
+                        this.state.filterGoneNextMonth
+                          ? "button-filter-checked"
+                          : "button-filter"
+                      }
+                      onClick={this.onFilterGoneNextMonthButtonClicked}
+                    >
+                      Gone Next Month
+                    </Button>
+                  </Col>
+                  <Col>
+                    <Button
+                      className={
+                        this.state.filterNewThisMonth
+                          ? "button-filter-checked"
+                          : "button-filter"
+                      }
+                      onClick={this.onFilterGNewThisMonthButtonClicked}
+                    >
+                      New This Month
+                    </Button>
+                  </Col>
+                </Row>
+
+                <Row style={{ margin: "5px" }}>
+                  {this.state.sortedData &&
+                    this.state.sortedData.map((arr) => (
+                      <Row style={{width:"100%"}}>
+                        <Row style={{width:"100%"}}>
+                          <h2>{arr[0] && arr[0].Location}</h2>
+                        </Row>
+                        <Row style={{width:"100%"}}>
+                          {arr.map(({ ...itemProps }) => (
+                            <Col xs={12} sm={8} md={6} lg={4} xl={4}>
+                              <CustomCard {...itemProps} />
+                            </Col>
+                          ))}
+                        </Row>
+                      </Row>
+                    ))}
+                </Row>
+              </div>
+            )}
+        </div>
       </div>
     );
   }
