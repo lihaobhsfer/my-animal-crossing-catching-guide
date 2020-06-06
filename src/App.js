@@ -232,16 +232,24 @@ class App extends React.Component {
     });
     console.log(dfMap);
     df = [];
-    for (let [key, val] of Object.entries(dfMap)) {
-      console.log(key, val);
-      
-      if(key==="Sea") df.push(val);
-      if(key==="Sea (Raining)") df.push(val);
-      if(key==="Pier") df.push(val);
-      if(key==="River") df.push(val);
-      if(key==="River (Clifftop") df.push(val);
-      if(key==="Pond") df.push(val);
-    }
+    if (dfMap["Sea"]) df.push(dfMap["Sea"]);
+    if (dfMap["Sea (Raining)"]) df.push(dfMap["Sea (Raining)"]);
+    if (dfMap["Pier"]) df.push(dfMap["Pier"]);
+    if (dfMap["River"]) df.push(dfMap["River"]);
+    if (dfMap["River (Clifftop)"]) df.push(dfMap["River (Clifftop)"]);
+    if (dfMap["River (Clifftop) Pond"]) df.push(dfMap["River (Clifftop) Pond"]);
+    if (dfMap["River (Mouth)"]) df.push(dfMap["River (Mouth)"]);
+    if (dfMap["Pond"]) df.push(dfMap["Pond"]);
+    // for (let [key, val] of Object.entries(dfMap)) {
+    //   console.log(key, val);
+
+    //   if(key==="Sea") {df.push(val);continue;}
+    //   if(key==="Sea (Raining)") {df.push(val);continue;}
+    //   if(key==="Pier") {df.push(val);continue;}
+    //   if(key.match(/River*/)) {df.push(val);continue;}
+    //   if(key==="Pond") {df.push(val);continue;}
+    // }
+    console.log(df);
     this.setState({
       sortedData: df,
     });
@@ -433,11 +441,11 @@ class App extends React.Component {
                 <Row style={{ margin: "5px" }}>
                   {this.state.sortedData &&
                     this.state.sortedData.map((arr) => (
-                      <Row style={{width:"100%"}}>
-                        <Row style={{width:"100%"}}>
-                          <h2>{arr[0] && arr[0].Location}</h2>
+                      <Row style={{ width: "100%" }}>
+                        <Row style={{ width: "100%" }}>
+                          <h2>{arr && arr[0] && arr[0].Location}</h2>
                         </Row>
-                        <Row style={{width:"100%"}}>
+                        <Row style={{ width: "100%" }}>
                           {arr.map(({ ...itemProps }) => (
                             <Col xs={12} sm={8} md={6} lg={4} xl={4}>
                               <CustomCard {...itemProps} />
