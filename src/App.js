@@ -47,7 +47,8 @@ class App extends React.Component {
 
       data["Months"] = newArr;
       data["MonthsInWord"] = translateMonth(newArr);
-      data["availableNow"] = checkAvailableNow(data["Time"]);
+      data["availableNow"] =
+        checkAvailableNow(data["Time"]) && newArr.indexOf(month) !== -1;
       df.push(data);
 
       function checkAvailableNow(timeInWords) {
