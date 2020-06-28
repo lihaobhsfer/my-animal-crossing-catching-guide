@@ -233,23 +233,24 @@ class App extends React.Component {
     });
     console.log(dfMap);
     df = [];
-    if (dfMap["Sea"]) df.push(dfMap["Sea"]);
-    if (dfMap["Sea (Raining)"]) df.push(dfMap["Sea (Raining)"]);
-    if (dfMap["Pier"]) df.push(dfMap["Pier"]);
-    if (dfMap["River"]) df.push(dfMap["River"]);
-    if (dfMap["River (Clifftop)"]) df.push(dfMap["River (Clifftop)"]);
-    if (dfMap["River (Clifftop) Pond"]) df.push(dfMap["River (Clifftop) Pond"]);
-    if (dfMap["River (Mouth)"]) df.push(dfMap["River (Mouth)"]);
-    if (dfMap["Pond"]) df.push(dfMap["Pond"]);
-    // for (let [key, val] of Object.entries(dfMap)) {
-    //   console.log(key, val);
+    if (this.state.type == "Fish") {
+      if (dfMap["Sea"]) df.push(dfMap["Sea"]);
+      if (dfMap["Sea (Raining)"]) df.push(dfMap["Sea (Raining)"]);
+      if (dfMap["Pier"]) df.push(dfMap["Pier"]);
+      if (dfMap["River"]) df.push(dfMap["River"]);
+      if (dfMap["River (Clifftop)"]) df.push(dfMap["River (Clifftop)"]);
+      if (dfMap["River (Clifftop) Pond"])
+        df.push(dfMap["River (Clifftop) Pond"]);
+      if (dfMap["River (Mouth)"]) df.push(dfMap["River (Mouth)"]);
+      if (dfMap["Pond"]) df.push(dfMap["Pond"]);
+    } else {
+      for (let [key, val] of Object.entries(dfMap)) {
+        console.log(key, val);
 
-    //   if(key==="Sea") {df.push(val);continue;}
-    //   if(key==="Sea (Raining)") {df.push(val);continue;}
-    //   if(key==="Pier") {df.push(val);continue;}
-    //   if(key.match(/River*/)) {df.push(val);continue;}
-    //   if(key==="Pond") {df.push(val);continue;}
-    // }
+        df.push(val);
+      }
+    }
+
     console.log(df);
     this.setState({
       sortedData: df,
