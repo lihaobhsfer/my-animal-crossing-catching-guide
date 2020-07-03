@@ -49,6 +49,9 @@ class App extends React.Component {
       data["MonthsInWord"] = translateMonth(newArr);
       data["availableNow"] =
         checkAvailableNow(data["Time"]) && newArr.indexOf(month) !== -1;
+      data["ShadowSize"] = data["Shadow Size"];
+      data["SwimmingPattern"] = data["Swimming Pattern"];
+
       df.push(data);
 
       function checkAvailableNow(timeInWords) {
@@ -56,7 +59,7 @@ class App extends React.Component {
         let currentHour = date.getHours();
         // console.log("current hour is", currentHour)
         // console.log(timeInWords)
-        if (timeInWords === "All day") {
+        if (timeInWords.toLowerCase() === "all day") {
           // console.log("all day")
           return true;
         }
@@ -298,7 +301,7 @@ class App extends React.Component {
   };
 
   onTypeChange = (e) => {
-    // console.log(e.target.value);
+    console.log(e.target.value);
     this.setState(
       {
         type: e.target.value,
@@ -370,6 +373,9 @@ class App extends React.Component {
             >
               <Radio.Button value="Fish">Fish</Radio.Button>
               <Radio.Button value="Bug">Bugs</Radio.Button>
+              <Radio.Button value="Deep Sea Creature">
+                Deep Sea Creatures
+              </Radio.Button>
             </Radio.Group>
           </Row>
 

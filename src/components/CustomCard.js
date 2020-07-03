@@ -10,6 +10,7 @@ import {
   SlidersTwoTone,
   AlertTwoTone,
   WarningTwoTone,
+  PlayCircleTwoTone,
 } from "@ant-design/icons";
 
 const CustomCard = ({
@@ -23,6 +24,8 @@ const CustomCard = ({
   goneNextMonth,
   newThisMonth,
   availableNow,
+  SwimmingPattern,
+  ShadowSize,
 }) => (
   <Card
     style={{
@@ -46,14 +49,16 @@ const CustomCard = ({
           </Col>
         </Row>
       )}
-      <Row>
-        <Col span={4}>
-          <EnvironmentTwoTone twoToneColor="rgb(223, 180, 129)" />
-        </Col>
-        <Col span={20}>
-          <p className="desc-text">{Location}</p>
-        </Col>
-      </Row>
+      {Location && (
+        <Row>
+          <Col span={4}>
+            <EnvironmentTwoTone twoToneColor="rgb(223, 180, 129)" />
+          </Col>
+          <Col span={20}>
+            <p className="desc-text">{Location}</p>
+          </Col>
+        </Row>
+      )}
       <Row>
         <Col span={4}>
           <CalendarTwoTone twoToneColor="rgb(223, 180, 129)" />
@@ -85,6 +90,26 @@ const CustomCard = ({
           </Col>
           <Col span={20}>
             <p className="desc-text">{Size}</p>
+          </Col>
+        </Row>
+      )}
+      {ShadowSize && (
+        <Row>
+          <Col span={4}>
+            <SlidersTwoTone twoToneColor="rgb(223, 180, 129)" />
+          </Col>
+          <Col span={20}>
+            <p className="desc-text">{ShadowSize}</p>
+          </Col>
+        </Row>
+      )}
+      {SwimmingPattern && (
+        <Row>
+          <Col span={4}>
+            <PlayCircleTwoTone twoToneColor="rgb(223, 180, 129)" />
+          </Col>
+          <Col span={20}>
+            <p className="desc-text">{SwimmingPattern}</p>
           </Col>
         </Row>
       )}
