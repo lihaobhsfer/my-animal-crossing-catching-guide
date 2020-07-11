@@ -67,19 +67,19 @@ class App extends React.Component {
         if (timeInWords.match(/[0-9]+pm - [0-9]+am/)) {
           let numbers = timeInWords.match(/[0-9]+/g).map((i) => parseInt(i));
           // console.log(numbers)
-          for (let j = 0; j <= numbers[1]; j++) ret.push(j);
-          for (let j = numbers[0] + 12; j <= 23; j++) ret.push(j);
+          for (let j = 0; j < numbers[1]; j++) ret.push(j);
+          for (let j = numbers[0] + 12; j < 24; j++) ret.push(j);
         } else if (timeInWords.match(/[0-9]+am - [0-9]+pm/)) {
           let numbers = timeInWords.match(/[0-9]+/g).map((i) => parseInt(i));
           // console.log(numbers)
-          for (let i = numbers[0]; i <= numbers[1] + 12; i++) ret.push(i);
+          for (let i = numbers[0]; i < numbers[1] + 12; i++) ret.push(i);
         } else if (
           timeInWords.match(/[0-9]+am - [0-9]+am & [0-9]+pm - [0-9]+pm/)
         ) {
           let numbers = timeInWords.match(/[0-9]+/g).map((i) => parseInt(i));
           // console.log(numbers)
-          for (let i = numbers[0]; i <= numbers[1]; i++) ret.push(i);
-          for (let i = numbers[2]; i <= numbers[3]; i++) ret.push(i + 12);
+          for (let i = numbers[0]; i < numbers[1]; i++) ret.push(i);
+          for (let i = numbers[2]; i < numbers[3]; i++) ret.push(i + 12);
         }
         // console.log(ret)
         return ret.indexOf(currentHour) !== -1;
