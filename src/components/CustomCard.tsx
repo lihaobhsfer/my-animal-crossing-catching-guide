@@ -10,22 +10,25 @@ import {
   SlidersTwoTone,
   AlertTwoTone,
   WarningTwoTone,
+  PlayCircleTwoTone,
 } from "@ant-design/icons";
 
-type cardProps = {
-  url: string,
-  Name: string,
-  Price: number,
-  Location: string,
-  Size: string,
-  Time: string,
-  MonthsInWord: string,
-  goneNextMonth: boolean,
-  newThisMonth: boolean,
-  availableNow: boolean
+interface cardStatelessProps {
+  url: string;
+  Name: string;
+  Price: number;
+  Location: string;
+  Size: string;
+  Time: string;
+  MonthsInWord: string;
+  goneNextMonth: boolean;
+  newThisMonth: boolean;
+  availableNow: boolean;
+  ShadowSize: string;
+  SwimmingPattern: string;
 }
 
-const CustomCard = ({
+const CustomCard: React.SFC<cardStatelessProps> = ({
   url,
   Name,
   Price,
@@ -36,7 +39,9 @@ const CustomCard = ({
   goneNextMonth,
   newThisMonth,
   availableNow,
-}: cardProps) => (
+  ShadowSize,
+  SwimmingPattern,
+}) => (
   <Card
     style={{
       background: "#fefae3",
@@ -98,6 +103,26 @@ const CustomCard = ({
           </Col>
           <Col span={20}>
             <p className="desc-text">{Size}</p>
+          </Col>
+        </Row>
+      )}
+      {ShadowSize && (
+        <Row>
+          <Col span={4}>
+            <SlidersTwoTone twoToneColor="rgb(223, 180, 129)" />
+          </Col>
+          <Col span={20}>
+            <p className="desc-text">{ShadowSize}</p>
+          </Col>
+        </Row>
+      )}
+      {SwimmingPattern && (
+        <Row>
+          <Col span={4}>
+            <PlayCircleTwoTone twoToneColor="rgb(223, 180, 129)" />
+          </Col>
+          <Col span={20}>
+            <p className="desc-text">{SwimmingPattern}</p>
           </Col>
         </Row>
       )}
