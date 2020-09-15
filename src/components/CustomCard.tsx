@@ -64,14 +64,16 @@ const CustomCard: React.SFC<cardStatelessProps> = ({
           </Col>
         </Row>
       )}
-      <Row>
-        <Col span={4}>
-          <EnvironmentTwoTone twoToneColor="rgb(223, 180, 129)" />
-        </Col>
-        <Col span={20}>
-          <p className="desc-text">{Location}</p>
-        </Col>
-      </Row>
+      {Location && (
+        <Row>
+          <Col span={4}>
+            <EnvironmentTwoTone twoToneColor="rgb(223, 180, 129)" />
+          </Col>
+          <Col span={20}>
+            <p className="desc-text">{Location}</p>
+          </Col>
+        </Row>
+      )}
       <Row>
         <Col span={4}>
           <CalendarTwoTone twoToneColor="rgb(223, 180, 129)" />
