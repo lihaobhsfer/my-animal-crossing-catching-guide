@@ -1,11 +1,13 @@
-import React from "react";
+import React, { MouseEvent } from "react";
 import * as d3 from "d3";
-import fishData from "./data/data.csv";
 import { Table, Radio, Row, Col, Button } from "antd";
 import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
 import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
 import "./App.css";
 import CustomCard from "./components/CustomCard";
+import { DSVRowAny } from "d3";
+import { RadioChangeEvent } from "antd/lib/radio";
+
 class App extends React.Component {
   state = {
     hemisphere: "Northern Hemisphere",
@@ -19,16 +21,18 @@ class App extends React.Component {
     filterNewThisMonth: true,
     showThisMonth: true,
     showAll: true,
+    filteredData: [],
+    sortedData: [],
   };
 
   componentDidMount() {
-    let df = [];
-    let columns = [];
+    let df: Array<DSVRowAny> = [];
+    let columns: Array<object> = [];
 
     // d3.dsv("|", "https://lihaobhsfer.cn/data.csv",function (data) {
-    d3.dsv("|", fishData, function (data) {
+    d3.dsv("|", `./data/data.csv`, (data: DSVRowAny): any => {
       let arr = data["Months"].replace("[", "").replace("]", "").split(",");
-      let newArr = arr.map((i) => {
+      let newArr = arr.map((i: string) => {
         return parseInt(i, 10);
       });
 
@@ -54,8 +58,8 @@ class App extends React.Component {
 
       df.push(data);
 
-      function checkAvailableNow(timeInWords) {
-        let date = new Date();
+      function checkAvailableNow(timeInWords: string): boolean {
+        let date: Date = new Date();
         let currentHour = date.getHours();
         // console.log("current hour is", currentHour)
         // console.log(timeInWords)
@@ -65,18 +69,24 @@ class App extends React.Component {
         }
         let ret = [];
         if (timeInWords.match(/[0-9]+pm - [0-9]+am/)) {
-          let numbers = timeInWords.match(/[0-9]+/g).map((i) => parseInt(i));
+          let numbers: Array<number> = timeInWords
+            .match(/[0-9]+/g)!
+            .map((i) => parseInt(i));
           // console.log(numbers)
           for (let j = 0; j < numbers[1]; j++) ret.push(j);
           for (let j = numbers[0] + 12; j < 24; j++) ret.push(j);
         } else if (timeInWords.match(/[0-9]+am - [0-9]+pm/)) {
-          let numbers = timeInWords.match(/[0-9]+/g).map((i) => parseInt(i));
+          let numbers: Array<number> = timeInWords
+            .match(/[0-9]+/g)!
+            .map((i) => parseInt(i));
           // console.log(numbers)
           for (let i = numbers[0]; i < numbers[1] + 12; i++) ret.push(i);
         } else if (
           timeInWords.match(/[0-9]+am - [0-9]+am & [0-9]+pm - [0-9]+pm/)
         ) {
-          let numbers = timeInWords.match(/[0-9]+/g).map((i) => parseInt(i));
+          let numbers: Array<number> = timeInWords
+            .match(/[0-9]+/g)!
+            .map((i) => parseInt(i));
           // console.log(numbers)
           for (let i = numbers[0]; i < numbers[1]; i++) ret.push(i);
           for (let i = numbers[2]; i < numbers[3]; i++) ret.push(i + 12);
@@ -85,7 +95,7 @@ class App extends React.Component {
         return ret.indexOf(currentHour) !== -1;
       }
 
-      function translateMonth(arr) {
+      function translateMonth(arr: Array<number>): string {
         if (arr.length === 12) return "All Year";
         else {
           let res = [];
@@ -103,11 +113,11 @@ class App extends React.Component {
           res.push(tmpArr);
           if (arr.indexOf(1) !== -1 && arr.indexOf(12) !== -1) {
             let last = res.pop();
-            res[0].unshift(...last.reverse());
+            res[0].unshift(...last!.reverse());
           }
 
-          let ret = "";
-          let months = [
+          let ret: string = "";
+          let months: Array<string> = [
             "Jan.",
             "Feb.",
             "Mar.",
@@ -140,7 +150,7 @@ class App extends React.Component {
             title: "Image",
             key: "url",
             dataIndex: "url",
-            render: (url) => {
+            render: (url: string) => {
               return <img src={url} alt="img" />;
             },
           });
@@ -168,7 +178,7 @@ class App extends React.Component {
   }
 
   filterData = () => {
-    let df = this.state.data;
+    let df: Array<DSVRowAny> = this.state.data;
     df = df.filter(
       (i) =>
         i["Hemisphere"] === this.state.hemisphere &&
@@ -185,12 +195,12 @@ class App extends React.Component {
     if (this.state.showThisMonth)
       df = df.filter((i) => i["Months"].indexOf(month) !== -1);
     // Prepare data for this month
-    let names = {};
-    let filteredData = [];
+    let names = new Map<string, number>();
+    let filteredData: Array<DSVRowAny> = [];
     // eslint-disable-next-line
     df.map((i) => {
-      if (!names[i["Name"]]) {
-        names[i["Name"]] = 1;
+      if (!names.get(i["Name"])) {
+        names.set(i["Name"], 1);
         filteredData.push(i);
       }
     });
@@ -208,16 +218,17 @@ class App extends React.Component {
   sortData = () => {
     let type = this.state.sortByPrice;
 
-    let df = this.state.filteredData;
+    let df: Array<DSVRowAny> = this.state.filteredData;
     if (type === "ASC")
-      df.sort((a, b) => {
-        parseInt(a.Price.replace(",", ""), 10) -
-          parseInt(b.Price.replace(",", ""), 10) ||
-          a.Name.localeCompare(b.Name);
-      });
+      df.sort(
+        (a: any, b: any) =>
+          parseInt(a.Price.replace(",", ""), 10) -
+            parseInt(b.Price.replace(",", ""), 10) ||
+          a.Name.localeCompare(b.Name)
+      );
     if (type === "DESC")
       df.sort(
-        (a, b) =>
+        (a: DSVRowAny, b: DSVRowAny) =>
           parseInt(b.Price.replace(",", ""), 10) -
             parseInt(a.Price.replace(",", ""), 10) ||
           a.Name.localeCompare(b.Name)
@@ -226,37 +237,43 @@ class App extends React.Component {
     let dfAvailable = df.filter((a) => a.availableNow);
     let dfNotAvailable = df.filter((a) => !a.availableNow);
     df = [...dfAvailable, ...dfNotAvailable];
-    let dfMap = {};
+
+    // type Dict = { [key: string]; string };
+    let dfMap = new Map<string, Array<object>>();
     df.map((i) => {
-      if (!dfMap[i["Location"]]) {
-        dfMap[i["Location"]] = [];
+      if (!dfMap.get(i["Location"])) {
+        dfMap.set(i["Location"], []);
       }
-      dfMap[i["Location"]].push(i);
+      dfMap.get(i["Location"])!.push(i);
       return null;
     });
-    console.log(dfMap);
-    df = [];
-    if (this.state.type == "Fish") {
-      if (dfMap["Sea"]) df.push(dfMap["Sea"]);
-      if (dfMap["Sea (Raining)"]) df.push(dfMap["Sea (Raining)"]);
-      if (dfMap["Pier"]) df.push(dfMap["Pier"]);
-      if (dfMap["River"]) df.push(dfMap["River"]);
-      if (dfMap["River (Clifftop)"]) df.push(dfMap["River (Clifftop)"]);
-      if (dfMap["River (Clifftop) Pond"])
-        df.push(dfMap["River (Clifftop) Pond"]);
-      if (dfMap["River (Mouth)"]) df.push(dfMap["River (Mouth)"]);
-      if (dfMap["Pond"]) df.push(dfMap["Pond"]);
+    const dfWithLocation = [];
+    if (this.state.type === "Fish") {
+      if (dfMap.get("Sea")) dfWithLocation.push(dfMap.get("Sea"));
+      if (dfMap.get("Sea (Raining)"))
+        dfWithLocation.push(dfMap.get("Sea (Raining)"));
+      if (dfMap.get("Pier")) dfWithLocation.push(dfMap.get("Pier"));
+      if (dfMap.get("River")) dfWithLocation.push(dfMap.get("River"));
+      if (dfMap.get("River (Clifftop)"))
+        dfWithLocation.push(dfMap.get("River (Clifftop)"));
+      if (dfMap.get("River (Clifftop) Pond"))
+        dfWithLocation.push(dfMap.get("River (Clifftop) Pond"));
+      if (dfMap.get("River (Mouth)"))
+        dfWithLocation.push(dfMap.get("River (Mouth)"));
+      if (dfMap.get("Pond")) dfWithLocation.push(dfMap.get("Pond"));
     } else {
-      for (let [key, val] of Object.entries(dfMap)) {
-        console.log(key, val);
+      console.log(dfMap);
 
-        df.push(val);
+      for (const [key, val] of dfMap) {
+        console.log(key, val);
+        console.log(dfMap.get(key));
+
+        dfWithLocation.push(dfMap.get(key));
       }
     }
-
-    console.log(df);
+    // console.log(dfWithLocation);
     this.setState({
-      sortedData: df,
+      sortedData: dfWithLocation,
     });
   };
 
@@ -276,11 +293,11 @@ class App extends React.Component {
     );
   };
 
-  onMonthChange = (e) => {
+  onMonthChange = (e: MouseEvent<HTMLButtonElement>) => {
     // console.log(e.target.value);
     this.setState(
       {
-        month: e.target.value,
+        month: e.currentTarget.value,
       },
       () => {
         this.filterData();
@@ -288,7 +305,7 @@ class App extends React.Component {
     );
   };
 
-  onHemisphereChange = (e) => {
+  onHemisphereChange = (e: RadioChangeEvent) => {
     // console.log(e.target.value);
     this.setState(
       {
@@ -300,7 +317,7 @@ class App extends React.Component {
     );
   };
 
-  onTypeChange = (e) => {
+  onTypeChange = (e: RadioChangeEvent) => {
     console.log(e.target.value);
     this.setState(
       {
@@ -448,13 +465,13 @@ class App extends React.Component {
 
                 <Row style={{ margin: "5px" }}>
                   {this.state.sortedData &&
-                    this.state.sortedData.map((arr) => (
+                    this.state.sortedData.map((arr: any) => (
                       <Row style={{ width: "100%" }}>
                         <Row style={{ width: "100%" }}>
                           <h2>{arr && arr[0] && arr[0].Location}</h2>
                         </Row>
                         <Row style={{ width: "100%" }}>
-                          {arr.map(({ ...itemProps }) => (
+                          {arr.map(({ ...itemProps }: any) => (
                             <Col xs={12} sm={8} md={6} lg={4} xl={4}>
                               <CustomCard {...itemProps} />
                             </Col>

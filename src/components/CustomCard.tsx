@@ -13,7 +13,22 @@ import {
   PlayCircleTwoTone,
 } from "@ant-design/icons";
 
-const CustomCard = ({
+interface cardStatelessProps {
+  url: string;
+  Name: string;
+  Price: number;
+  Location: string;
+  Size: string;
+  Time: string;
+  MonthsInWord: string;
+  goneNextMonth: boolean;
+  newThisMonth: boolean;
+  availableNow: boolean;
+  ShadowSize: string;
+  SwimmingPattern: string;
+}
+
+const CustomCard: React.SFC<cardStatelessProps> = ({
   url,
   Name,
   Price,
@@ -24,8 +39,8 @@ const CustomCard = ({
   goneNextMonth,
   newThisMonth,
   availableNow,
-  SwimmingPattern,
   ShadowSize,
+  SwimmingPattern,
 }) => (
   <Card
     style={{
