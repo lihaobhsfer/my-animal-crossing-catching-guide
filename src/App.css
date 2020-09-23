@@ -37,7 +37,6 @@
   }
 }
 
-
 .container {
   background-color: #cce2cf;
   padding: 20px 0;
@@ -45,25 +44,17 @@
 }
 
 .title {
-  border-radius: 20px;
-  background-color: #71997f;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  padding: 0 10px;
-}
-.title h3 {
   text-align: center;
   font-weight: 800;
-  max-width: 80%;
-  color: #fefae3;
-  margin: 5px;
-  display: contents;
-  overflow: hidden;
+  align-self: stretch;
+  background-color: rgb(113, 153, 127);
+  padding: 4px 8px;
+  border-radius: 100px;
+  color: rgb(255, 250, 227);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-
 .ant-card-body {
   padding: 12px !important;
   min-height: 18em;
@@ -143,7 +134,7 @@
 
 .button-filter:hover,
 .button-filter:active,
-.button-filter:focus  {
+.button-filter:focus {
   color: #282c34;
   border-color: transparent;
   outline: transparent;
@@ -161,7 +152,7 @@
 
 .button-filter-checked:hover,
 .button-filter-checked:active,
-.button-filter-checked:focus  {
+.button-filter-checked:focus {
   color: #fefae3;
   border-color: transparent;
   outline: transparent;
@@ -171,6 +162,8 @@
   border-radius: 20px !important;
 }
 
-.button-select, .button-filter-checked, .button-filter {
+.button-select,
+.button-filter-checked,
+.button-filter {
   margin: 5px;
 }

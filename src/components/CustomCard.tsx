@@ -51,7 +51,7 @@ const CustomCard: React.SFC<cardStatelessProps> = ({
   >
     <img style={{ display: "block", margin: "0 auto" }} src={url} alt={Name} />
     <div className="title">
-      <h3>{Name}</h3>
+      {Name}
     </div>
     <div className="card-desc">
       {availableNow && (
