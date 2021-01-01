@@ -31,7 +31,7 @@ for item_type in types:
     for m in range(len(months)):
         print(months[m])
         resp = requests.get("https://animalcrossing.fandom.com/wiki/Guide:" +
-                            months[m]+"_" + item_type.lower() + "_list_(New_Horizons)")
+                            months[m]+ "_" + item_type.lower() + "_list_(New_Horizons)")
         if resp.status_code == 200:
             #         print("Successfully opened the web page")
 

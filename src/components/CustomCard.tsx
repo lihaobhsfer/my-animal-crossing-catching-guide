@@ -49,10 +49,12 @@ const CustomCard: React.SFC<cardStatelessProps> = ({
       borderRadius: "10px",
     }}
   >
-    <img style={{ display: "block", margin: "0 auto" }} src={url} alt={Name} />
-    <div className="title">
-      {Name}
-    </div>
+    <img
+      style={{ display: "block", margin: "0 auto", width: "60%" }}
+      src={url}
+      alt={Name}
+    />
+    <div className="title">{Name}</div>
     <div className="card-desc">
       {availableNow && (
         <Row>
